@@ -3,6 +3,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 import pg from 'pg';
 import crypto from 'node:crypto';
+import {promisify} from 'node:util';
+const scrypt=promisify(crypto.scrypt);
 
 const PORT = Number(process.env.PORT || 10000);
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -19,6 +21,15 @@ app.use(helmet());
 app.use(cors({origin:FRONTEND_ORIGIN.split(',').map(v=>v.trim())}));
 app.use(express.json({limit:'16kb'}));
 const WORLD=2048, CHUNK=32;
+const ACCOUNT_SESSION_DAYS=30;
+const ADMIN_EMAIL=(process.env.ADMIN_EMAIL||'').trim().toLowerCase();
+const ADMIN_PASSWORD=process.env.ADMIN_PASSWORD||'';
+const emailOk=e=>typeof e==='string'&&e.trim().length<=254&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+const passwordOk=p=>typeof p==='string'&&p.length>=12&&p.length<=128;
+async function passwordHash(p){const salt=crypto.randomBytes(16).toString('hex');const key=await scrypt(p,salt,64);return salt+':'+key.toString('hex')}
+async function passwordVerify(p,stored){if(typeof stored!=='string')return false;const [salt,hex]=stored.split(':');if(!salt||!/^[a-f0-9]{128}$/.test(hex||''))return false;const key=await scrypt(p,salt,64);return crypto.timingSafeEqual(key,Buffer.from(hex,'hex'))}
+async function issueSession(accountId){const raw=crypto.randomBytes(32).toString('hex');await pool.query(`INSERT INTO origins_account_sessions(account_id,token_hash,expires_at) VALUES($1,$2,now()+interval '30 days')`,[accountId,hash(raw)]);return raw}
+
 // Toutes les dépenses sont vérifiées et prélevées dans une transaction PostgreSQL.
 const COSTS=Object.freeze({
   hut:{wood:12,stone:2,food:4},fire:{wood:5,stone:3,food:0},
@@ -154,16 +165,125 @@ async function init(){
   await pool.query(`CREATE INDEX IF NOT EXISTS origins_people_owner ON origins_people(player_id)`);
   await pool.query(`CREATE INDEX IF NOT EXISTS origins_players_xy ON origins_players(x,y)`);
   await pool.query(`CREATE INDEX IF NOT EXISTS origins_buildings_xy ON origins_buildings(x,y)`);
+  // V37 : comptes indépendants des anciennes clés de village ; migrations non destructives.
+  await pool.query(`CREATE TABLE IF NOT EXISTS origins_accounts (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(254) NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(12) NOT NULL DEFAULT 'player' CHECK(role IN ('player','admin')),
+    player_id BIGINT UNIQUE REFERENCES origins_players(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`);
+  await pool.query(`ALTER TABLE origins_accounts ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMPTZ`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS origins_admin_audit(id BIGSERIAL PRIMARY KEY, admin_account_id BIGINT NOT NULL REFERENCES origins_accounts(id), target_account_id BIGINT REFERENCES origins_accounts(id), action VARCHAR(32) NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now())`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS origins_account_sessions (
+    id BIGSERIAL PRIMARY KEY,
+    account_id BIGINT NOT NULL REFERENCES origins_accounts(id) ON DELETE CASCADE,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS origins_sessions_account ON origins_account_sessions(account_id)`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS origins_sessions_expiry ON origins_account_sessions(expires_at)`);
+  if(ADMIN_EMAIL && emailOk(ADMIN_EMAIL) && passwordOk(ADMIN_PASSWORD)){
+    const existing=await pool.query('SELECT id FROM origins_accounts WHERE email=$1',[ADMIN_EMAIL]);
+    if(!existing.rowCount){const pwd=await passwordHash(ADMIN_PASSWORD);await pool.query("INSERT INTO origins_accounts(email,password_hash,role) VALUES($1,$2,'admin') ON CONFLICT (email) DO NOTHING",[ADMIN_EMAIL,pwd]);console.log('Compte administrateur initialisé');}
+    else await pool.query("UPDATE origins_accounts SET role='admin' WHERE email=$1",[ADMIN_EMAIL]);
+  }
+
+}
+async function sessionAccount(req){
+ const token=(req.get('Authorization')||'').replace(/^Bearer\s+/i,'');
+ if(!/^[0-9a-f]{64}$/.test(token))return null;
+ const found=await pool.query(`SELECT a.id,a.email,a.role,a.player_id FROM origins_account_sessions s
+ JOIN origins_accounts a ON a.id=s.account_id
+ WHERE s.token_hash=$1 AND s.expires_at>now() AND a.suspended_at IS NULL`,[hash(token)]);
+ return found.rows[0]||null;
 }
 async function auth(req,res,next){
+ try{
   const token=(req.get('Authorization')||'').replace(/^Bearer\s+/i,'');
   if(!/^[0-9a-f]{64}$/.test(token))return res.status(401).json({error:'Session invalide'});
+  const account=await sessionAccount(req);
+  if(account){
+   if(!account.player_id)return res.status(409).json({error:'Associe une tribu à ton compte avant de jouer'});
+   req.account=account;
+   const p=await pool.query('SELECT id,name,x,y FROM origins_players WHERE id=$1',[account.player_id]);
+   if(!p.rows[0])return res.status(401).json({error:'Village introuvable'});
+   req.player=p.rows[0];return next();
+  }
+  // Compatibilité : les clés V34-V36 restent valides pour récupérer son village.
   const q=await pool.query('SELECT id,name,x,y FROM origins_players WHERE token_hash=$1',[hash(token)]);
   if(!q.rows[0])return res.status(401).json({error:'Session inconnue'});
   req.player=q.rows[0];next();
+ }catch(e){next(e)}
 }
+async function accountAuth(req,res,next){try{const a=await sessionAccount(req);if(!a)return res.status(401).json({error:'Compte non connecté'});req.account=a;next()}catch(e){next(e)}}
+async function adminAuth(req,res,next){try{const a=await sessionAccount(req);if(!a||a.role!=='admin')return res.status(403).json({error:'Accès administrateur refusé'});req.account=a;next()}catch(e){next(e)}}
+// V37 : inscription, connexion et rattachement explicite des anciennes tribus.
+app.post('/api/accounts/register',throttle('register',6,60*60*1000),async(req,res)=>{
+ const email=String(req.body?.email||'').trim().toLowerCase(),password=req.body?.password;
+ if(!emailOk(email)||!passwordOk(password))return res.status(400).json({error:'E-mail invalide ou mot de passe de moins de 12 caractères'});
+ const key=String(req.body?.tribeKey||'').trim().toLowerCase();
+ if(!/^[0-9a-f]{64}$/.test(key))return res.status(400).json({error:'Clé de tribu requise pour associer ta sauvegarde'});
+ try{
+  const village=(await pool.query('SELECT id FROM origins_players WHERE token_hash=$1',[hash(key)])).rows[0];
+  if(!village)return res.status(404).json({error:'Clé de tribu introuvable'});
+  const secret=await passwordHash(password);
+  const a=await pool.query("INSERT INTO origins_accounts(email,password_hash,player_id) VALUES($1,$2,$3) RETURNING id,email,role,player_id",[email,secret,village.id]);
+  // L'ancienne clé anonyme ne doit plus donner accès au village après rattachement.
+  await pool.query('UPDATE origins_players SET token_hash=$2 WHERE id=$1',[village.id,hash(crypto.randomBytes(32).toString('hex'))]);
+  const token=await issueSession(a.rows[0].id);res.status(201).json({token,account:a.rows[0]});
+ }catch(e){if(e.code==='23505')return res.status(409).json({error:'E-mail déjà enregistré ou village déjà associé à un compte'});console.error(e);res.status(500).json({error:'Inscription impossible'})}
+});
+app.post('/api/accounts/login',throttle('login',15,15*60*1000),async(req,res)=>{
+ const email=String(req.body?.email||'').trim().toLowerCase(),password=req.body?.password;
+ if(!emailOk(email)||typeof password!=='string')return res.status(401).json({error:'Identifiants invalides'});
+ const a=(await pool.query('SELECT * FROM origins_accounts WHERE email=$1',[email])).rows[0];
+ if(!a||a.suspended_at||!await passwordVerify(password,a.password_hash))return res.status(401).json({error:'Identifiants invalides'});
+ const token=await issueSession(a.id);res.json({token,account:{id:a.id,email:a.email,role:a.role,player_id:a.player_id}});
+});
+app.get('/api/accounts/me',accountAuth,(req,res)=>res.json({account:req.account}));
+app.post('/api/accounts/claim',accountAuth,throttle('claim',8,60*60*1000),async(req,res)=>{
+ const key=String(req.body?.tribeKey||'').trim().toLowerCase();
+ if(!/^[0-9a-f]{64}$/.test(key))return res.status(400).json({error:'Clé de tribu invalide'});
+ if(req.account.player_id)return res.status(409).json({error:'Ce compte possède déjà une tribu'});
+ const p=(await pool.query('SELECT id FROM origins_players WHERE token_hash=$1',[hash(key)])).rows[0];
+ if(!p)return res.status(404).json({error:'Clé de tribu introuvable'});
+ try{await pool.query('UPDATE origins_accounts SET player_id=$1 WHERE id=$2 AND player_id IS NULL',[p.id,req.account.id]);await pool.query('UPDATE origins_players SET token_hash=$2 WHERE id=$1',[p.id,hash(crypto.randomBytes(32).toString('hex'))]);res.json({ok:true})}catch(e){if(e.code==='23505')return res.status(409).json({error:'Tribu déjà liée à un autre compte'});throw e}
+});
+app.post('/api/accounts/logout',accountAuth,async(req,res)=>{const raw=(req.get('Authorization')||'').replace(/^Bearer\s+/i,'');await pool.query('DELETE FROM origins_account_sessions WHERE token_hash=$1',[hash(raw)]);res.json({ok:true})});
+app.get('/api/admin/overview',adminAuth,async(req,res)=>{
+ const [players,accounts,people,buildings,animals]=await Promise.all([
+  pool.query('SELECT COUNT(*)::int AS n FROM origins_players'),pool.query('SELECT COUNT(*)::int AS n FROM origins_accounts'),pool.query('SELECT COUNT(*)::int AS n FROM origins_people'),pool.query('SELECT COUNT(*)::int AS n FROM origins_buildings'),pool.query('SELECT COUNT(*)::int AS n FROM origins_animals')]);
+ res.json({world:WORLD,players:players.rows[0].n,accounts:accounts.rows[0].n,people:people.rows[0].n,buildings:buildings.rows[0].n,animals:animals.rows[0].n});
+});
+app.get('/api/admin/accounts',adminAuth,async(req,res)=>{
+ const rows=await pool.query('SELECT id,email,role,player_id,suspended_at,created_at FROM origins_accounts ORDER BY id DESC LIMIT 100');
+ res.json({accounts:rows.rows});
+});
+app.post('/api/admin/accounts/:id/suspension',adminAuth,throttle('admin-action',25,60*1000),async(req,res)=>{
+ const id=Number(req.params.id),suspended=req.body?.suspended;
+ if(!Number.isSafeInteger(id)||id<1||typeof suspended!=='boolean')return res.status(400).json({error:'Paramètres invalides'});
+ if(id===Number(req.account.id))return res.status(403).json({error:'Impossible de suspendre son propre compte'});
+ const client=await pool.connect();try{
+  await client.query('BEGIN');
+  const a=(await client.query('SELECT id,role FROM origins_accounts WHERE id=$1 FOR UPDATE',[id])).rows[0];
+  if(!a){await client.query('ROLLBACK');return res.status(404).json({error:'Compte introuvable'})}
+  if(a.role==='admin'){await client.query('ROLLBACK');return res.status(403).json({error:'Protection des autres administrateurs'})}
+  await client.query('UPDATE origins_accounts SET suspended_at=$2 WHERE id=$1',[id,suspended?new Date():null]);
+  if(suspended)await client.query('DELETE FROM origins_account_sessions WHERE account_id=$1',[id]);
+  await client.query('INSERT INTO origins_admin_audit(admin_account_id,target_account_id,action) VALUES($1,$2,$3)',[req.account.id,id,suspended?'suspend':'restore']);
+  await client.query('COMMIT');res.json({ok:true});
+ }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
+});
+app.get('/api/admin/players',adminAuth,async(req,res)=>{
+ const rows=await pool.query(`SELECT p.id,p.name,p.x,p.y,p.created_at,a.email AS account_email
+ FROM origins_players p LEFT JOIN origins_accounts a ON a.player_id=p.id ORDER BY p.id DESC LIMIT 100`);
+ res.json({players:rows.rows});
+});
 function validateCoord(x,y){return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<WORLD&&y<WORLD;}
-app.get('/api/health',async(req,res)=>{try{await pool.query('SELECT 1');res.json({ok:true,world:WORLD,version:34,day:worldDay(),season:season(),weather:weather()})}catch{res.status(503).json({ok:false})}});
+app.get('/api/health',async(req,res)=>{try{await pool.query('SELECT 1');res.json({ok:true,world:WORLD,version:37,day:worldDay(),season:season(),weather:weather()})}catch{res.status(503).json({ok:false})}});
 app.post('/api/join',throttle('join',8,60*60*1000),async(req,res)=>{
   if(!nameOk(req.body?.name))return res.status(400).json({error:'Nom entre 2 et 25 caractères'});
   const client=await pool.connect();
@@ -444,7 +564,7 @@ app.post('/api/animals/slaughter',auth,throttle('slaughter',30,60*1000),async(re
     await client.query('COMMIT');res.json({animal:a,food:MEAT[a.species]});
   }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.status?e.message:'Erreur élevage'})}finally{client.release()}
 });
-app.get('/api/config',(req,res)=>res.json({version:34,worldSize:WORLD,chunkSize:CHUNK,costs:COSTS,navigationCost:25,boatCost:{wood:35,stone:8},features:['economy','timed-roundtrip-expeditions','training','restricted-rename','exploration','jobs','births','seasons','terrain3d','biomes','aging','genealogy','villagers3d','needs','weather','housing','ui28','ui29','fishing','primitive-port','boat-research','sea-expeditions','animal-traps','enclosures','breeding','expedition-wildlife-choices','breeder-profession','biome-wildlife','placement-preview-confirmation','animal-needs','animal-care','animated-herds','contextual-codex']}));
+app.get('/api/config',(req,res)=>res.json({version:37,worldSize:WORLD,chunkSize:CHUNK,costs:COSTS,navigationCost:25,boatCost:{wood:35,stone:8},features:['economy','timed-roundtrip-expeditions','training','restricted-rename','exploration','jobs','births','seasons','terrain3d','biomes','aging','genealogy','villagers3d','needs','weather','housing','ui28','ui29','fishing','primitive-port','boat-research','sea-expeditions','animal-traps','enclosures','breeding','expedition-wildlife-choices','breeder-profession','biome-wildlife','placement-preview-confirmation','animal-needs','animal-care','animated-herds','contextual-codex']}));
 app.get('/api/me',auth,async(req,res)=>{const p=req.player;const explored=(await pool.query('SELECT x,y FROM origins_discoveries WHERE player_id=$1 ORDER BY x,y LIMIT 30000',[p.id])).rows;const buildings=(await pool.query('SELECT id,x,y,kind FROM origins_buildings WHERE player_id=$1',[p.id])).rows;res.json({player:p,explored,buildings,worldSize:WORLD})});
 app.get('/api/chunk',auth,async(req,res)=>{
   const cx=Number(req.query.cx),cy=Number(req.query.cy);

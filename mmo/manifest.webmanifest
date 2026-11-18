@@ -1,11 +1,11 @@
 {
-  "name": "METROPOLIS ORIGINS MMO V35 — Caméra et décor améliorés",
+  "name": "METROPOLIS ORIGINS MMO V37 — Renaissance",
   "short_name": "Origins MMO",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0b1511",
-  "theme_color": "#12231b",
+  "background_color": "#071812",
+  "theme_color": "#102b25",
   "lang": "fr",
   "icons": [
     {

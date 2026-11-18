@@ -1,11 +1,11 @@
 {
-  "name": "Metropolis Origins XXIII — Grand Monde",
-  "short_name": "Origins XXIII",
-  "start_url": "./index.html",
+  "name": "METROPOLIS ORIGINS MMO V37",
+  "short_name": "Origins MMO",
+  "start_url": "./mmo/",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#101b18",
-  "theme_color": "#16241b",
+  "background_color": "#071812",
+  "theme_color": "#102b25",
   "lang": "fr",
   "icons": [
     {

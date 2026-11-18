@@ -1,22 +1,25 @@
-# METROPOLIS ORIGINS MMO V34 — Correctif tactile et fiches des constructions
+# METROPOLIS ORIGINS MMO V35 — correctif visuel immédiat
 
-Cette version corrige les deux problèmes remontés sur la V33 :
+Cette version réutilise le serveur et la base PostgreSQL de V34 sans modifier leurs données.
 
-1. **Construction en deux étapes** : Construire → toucher un bâtiment pour ouvrir sa fiche → « Choisir … et placer » → toucher une case sur la carte → aperçu 3D translucide + coûts → Confirmer / Annuler. Le serveur ne reçoit `/api/build` qu'après la confirmation.
-2. **Fiches de bâtiments accessibles** : toucher un nom de bâtiment ouvre la fiche (description, coût, rôle, restrictions) au lieu de devoir viser un petit bouton ⓘ.
-3. **Toucher mobile fiabilisé** : tolérance de 12 pixels aux tremblements du doigt, temps de toucher de 850 ms, et rotation activée seulement lors d'un véritable glissement.
-4. Les fiches de métiers et ressources sont conservées.
-5. Version du service worker montée à v34 pour rafraîchir le cache.
+## Corrections du rendu
+- Caméra initiale centrée sur la colonie du joueur au lieu du centre vide du secteur.
+- Zoom plus proche avec réglages de zoom plus fins pour souris et écran tactile.
+- Nuit plus lisible : éclairage minimum renforcé, ciel moins noir.
+- Brouillard de guerre en couleurs variées et légère hauteur pour éviter l’effet dalle unie, sans dévoiler les biomes inconnus.
+- Anticrénelage WebGL et détails près des huttes.
+- Cache PWA V35 pour forcer la mise à jour après publication.
 
-## Mettre à jour
+## Déploiement Windows — aucune modification Render nécessaire
+Depuis C:\Metropolis\metropolis-origins, décompresser le ZIP et remplacer les fichiers ; puis :
 
-- Sauvegarder la base PostgreSQL et la clé de tribu.
-- Décompresser le ZIP et remplacer les fichiers du dépôt GitHub par ceux du dossier, sans envoyer le ZIP lui-même.
-- Déployer le dossier `server` sur Render comme auparavant ; l'API `/api/health` indique `version: 34`.
-- Dans Safari, recharger `/metropolis-origins/mmo/`. Si l'ancienne version reste visible, fermer l'app ajoutée à l'écran d'accueil et ouvrir le site dans un nouvel onglet Safari ; éventuellement effacer les données de site après avoir exporté la clé de tribu.
+```powershell
+git add .
+git commit -m "V35 correctif camera et rendu 3D"
+git push origin main
+```
 
-Le code de l'API de construction côté serveur et la base de données ne changent pas. Pas de migration PostgreSQL requise.
+GitHub Pages met à jour l’interface. Render V34 reste inchangé ; PostgreSQL et les tribus existantes sont conservés.
 
-## Limites des tests
-
-Tests de syntaxe et vérifications statiques effectués. Le rendu tactile sur Safari iPhone et l'intégration avec PostgreSQL/Render restent à valider sur les appareils réels.
+## Limites
+Cette version corrige la composition visuelle et la lisibilité ; elle ne remplace pas les objets géométriques simplifiés par des modèles 3D professionnels. Le rendu iPhone/PC et le gameplay doivent être testés après déploiement. Ne pas décompresser le ZIP dans un dossier supplémentaire du dépôt : index.html et mmo doivent rester à la racine.

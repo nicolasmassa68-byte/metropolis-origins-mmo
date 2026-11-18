@@ -1,0 +1,324 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101b16"><title>METROPOLIS ORIGINS MMO V34 — Construction corrigée</title><link rel="manifest" href="manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="../icon-192.png"><style>
+#weatherFx{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.40}
+#weatherFx.rain{background-image:repeating-linear-gradient(110deg, transparent 0px,transparent 22px,#cfe9fa88 23px,transparent 25px);background-size:130px 90px;animation:rainfall .5s linear infinite}
+#weatherFx.snow{background-image:radial-gradient(2px 2px at 20px 30px,#fff 90%,transparent),radial-gradient(3px 3px at 80px 60px,#fff 90%,transparent),radial-gradient(2px 2px at 130px 10px,#fff 90%,transparent);background-size:170px 140px;animation:snowfall 8s linear infinite}
+@keyframes rainfall{from{background-position:0 0}to{background-position:-40px 90px}}@keyframes snowfall{from{background-position:0 0}to{background-position:60px 140px}}
+
+:root{color-scheme:dark;--gold:#e5bd79;--muted:#b1c2b5;--panel:#14231eea}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:#0b1511;color:#f1f4ea;font:14px system-ui,-apple-system,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #8d9778;background:#263c31;color:#f5f3e5;padding:10px 12px;border-radius:11px;font-weight:650}button.primary,.selected{background:var(--gold)!important;color:#281a0d!important;border-color:#eacb9c!important}button:disabled{opacity:.45}input,select{background:#14261e;border:1px solid #66806b;border-radius:9px;padding:10px;color:#fff;min-width:0}h1,h2,h3,p{margin:0}h1{font-size:17px;letter-spacing:.03em;color:#f0d39f}h2{font-size:15px;color:#f3d5a2}small,.muted{color:var(--muted)}.shell{min-height:100dvh;display:flex;flex-direction:column}.top{padding:12px max(13px,env(safe-area-inset-right)) 11px max(13px,env(safe-area-inset-left));background:#12231b;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #53694e}.top small{display:block;font-size:11px;margin-top:3px}.tag{font-size:11px;border:1px solid #65785e;border-radius:30px;padding:6px 9px;white-space:nowrap}.login{max-width:520px;margin:35px auto;padding:22px;background:#1b3026;border:1px solid #66806b;border-radius:18px;width:calc(100% - 22px)}.login label{display:block;margin:14px 0 6px;color:#d3dfcc}.login input{width:100%}.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.login .flex{margin-top:9px}.game{display:flex;flex:1;min-height:0;flex-direction:column}.viewport{position:relative;flex:1;min-height:350px;height:56dvh;overflow:hidden;background:linear-gradient(#83a3aa,#34524a)}#canvas{width:100%;height:100%;display:block;touch-action:none}.hud{position:absolute;z-index:2;pointer-events:none;left:10px;right:10px;top:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.hud .pill{background:#101f1bd9;border:1px solid #78917d;border-radius:12px;padding:8px 10px;font-size:12px;box-shadow:0 5px 20px #0005;max-width:62%}.hud .pill strong{color:#f1ce90}.hud .actions{display:flex;gap:5px;pointer-events:auto}.hud button{padding:9px;min-width:36px;background:#172c25d9}.coord{position:absolute;bottom:9px;left:9px;right:9px;pointer-events:none;text-align:center;font-size:11px;text-shadow:0 2px 4px #000;background:#101c16a8;border-radius:8px;padding:6px}.overlay{position:absolute;inset:0;background:#132017bf;display:flex;align-items:center;justify-content:center;z-index:3;text-align:center;padding:25px}.bottom{background:#13241b;border-top:1px solid #627657;padding:10px max(10px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(250px,1fr) minmax(240px,1fr);gap:11px}.card{background:#1a3125;border:1px solid #556d52;border-radius:13px;padding:10px}.bar{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}.bar button{padding:8px;font-size:12px}.jobs{max-height:130px;overflow:auto}.person{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #4a614a;padding:5px 0;gap:5px}.person select{max-width:56%;padding:6px;font-size:12px}.stat{font-size:12px;color:#d6e3d3;display:flex;flex-wrap:wrap;gap:9px;margin:7px 0}.note{font-size:11px;color:#b0c2b5;line-height:1.4;margin-top:5px}#status{font-size:12px;color:#ffd493;min-height:18px;margin-top:5px}#modeTools button{font-size:12px;padding:8px 9px}#modeTools{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}.drawer{margin-top:7px}.drawer summary{cursor:pointer;color:#eed19c}.drawer input{width:100%;margin:4px 0}#costs{font-size:11px;color:#bccaba}.warning{color:#f4cc93}.family{max-height:210px;overflow:auto;border-top:1px solid #52694f;margin-top:8px;padding-top:6px}.familyline{font-size:12px;padding:6px;border-bottom:1px solid #385241;color:#d9e6d5}.familyline small{display:block}.person .person-name{min-width:0;flex:1}.birth-parents{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.birth-parents select{flex:1;min-width:110px;max-width:100%}@media(max-width:650px){.dock button{font-size:17px}.dock button span{font-size:9px}.top{padding-top:max(12px,env(safe-area-inset-top))}.bottom{grid-template-columns:1fr}.viewport{min-height:330px;height:49dvh}.hud .pill{max-width:68%;font-size:11px}.game{min-height:0}}
+
+/* V28: navigation tactile et panneaux non invasifs */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.weather-line{color:#d7e4cd;font-size:11px;margin-top:3px}
+.game{position:relative;min-height:0}.viewport{height:calc(100dvh - 118px);min-height:420px;flex:1}.bottom{position:absolute;z-index:5;left:12px;bottom:83px;width:min(430px,calc(100% - 24px));max-height:min(60dvh,590px);display:block;padding:0;border:0;background:none;overflow:auto;overscroll-behavior:contain;pointer-events:none}.bottom .panel{display:none;pointer-events:auto;background:#12251fec;backdrop-filter:blur(16px);box-shadow:0 14px 34px #0009;border:1px solid #6c846e;padding:14px;border-radius:20px}.bottom .panel.active{display:block}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.close-panel{border:0;background:#30453b;padding:5px 10px;font-size:14px}.guide{font-size:12px;color:#d6e4d5;line-height:1.4;padding:8px 10px;background:#243c30;border-radius:10px;margin-bottom:9px}.quick-summary{color:#f8dca6;font-size:12px;margin-bottom:8px}.dock{position:absolute;z-index:7;bottom:0;left:0;right:0;display:flex;justify-content:space-around;gap:4px;background:#101e18ed;border-top:1px solid #668371;padding:9px max(8px,env(safe-area-inset-right)) max(11px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));backdrop-filter:blur(18px)}.dock button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;flex:1;border:0;background:transparent;color:#b5cab8;font-size:20px;padding:7px 2px}.dock button span{font-size:10px;font-weight:650}.dock button.active{color:#f4d497;background:#314338;border-radius:13px}.hud{top:8px;left:8px;right:8px}.hud .pill{max-width:58%;line-height:1.6}.hud .actions{flex-wrap:wrap;max-width:156px;justify-content:flex-end}.coord{bottom:14px;left:50%;right:auto;transform:translateX(-50%);max-width:80%;width:max-content;white-space:normal}.person{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 7px}.person .need-badges{grid-column:1/-1;display:flex;gap:5px;flex-wrap:wrap;font-size:11px}.need-badges span{background:#294337;border-radius:7px;padding:4px 6px}.need-badges .bad{background:#673b31;color:#ffd8b4}.person select{max-width:160px}.house-row{grid-column:1/-1}.house-row select{width:100%;max-width:100%;font-size:12px;padding:7px}.jobs{max-height:min(36dvh,300px)}.bar{gap:6px}.bar button{flex:1 0 auto;min-height:39px}#modeTools button{flex:1 1 130px;min-height:48px}#modeTools{display:flex}.family{max-height:26dvh}#costs{line-height:1.65;max-height:110px;overflow:auto}#toast{position:absolute;z-index:12;top:90px;left:50%;transform:translateX(-50%);width:min(450px,calc(100% - 30px));padding:10px 14px;border:1px solid #d8b778;border-radius:12px;background:#13291ff5;color:#ffe2a5;text-align:center;box-shadow:0 8px 24px #0007;font-size:12px;pointer-events:none}
+@media(max-width:650px){.top{padding:8px max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left))}.top small{display:none}.tag{font-size:10px}.viewport{min-height:0;height:calc(100dvh - 106px)}.bottom{bottom:80px;left:8px;width:calc(100% - 16px);max-height:min(48dvh,440px)}.bottom .panel{padding:12px}.coord{bottom:14px;font-size:10px}.hud .pill{font-size:11px;padding:7px}.hud button{padding:7px;min-width:34px}.dock button span{font-size:10px}}
+
+/* V32 : placement aperçu non destructif, lisible sur iPhone, sans cacher durablement la scène. */
+.build-confirm{position:absolute;inset:0;z-index:25;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(transparent 15%,#08150dbb 70%);padding:12px max(12px,env(safe-area-inset-right)) max(85px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));pointer-events:none}
+.build-sheet{width:min(440px,100%);border-radius:20px;background:#16291ff5;border:1px solid #d6b477;box-shadow:0 12px 38px #000c;padding:17px;pointer-events:auto;backdrop-filter:blur(15px)}
+.preview-eyebrow{font-size:10px;font-weight:800;letter-spacing:.08em;color:#f0cb86;margin-bottom:7px}.build-sheet h2{font-size:19px}.build-sheet .note{margin-top:5px;color:#d0dfce;font-size:12px}.preview-cost{margin:12px 0 4px;padding:9px 11px;background:#243b2e;border-radius:10px;color:#ffdfae}.preview-warning{color:#ffb99b;font-size:12px;min-height:16px}.preview-buttons{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-top:13px}.preview-buttons button{min-height:46px;padding:9px 7px;font-size:12px}
+
+/* V33: encyclopedia accessible sans quitter la carte */
+.codex-backdrop{position:absolute;inset:0;z-index:35;display:flex;justify-content:center;align-items:center;background:#08130cc9;padding:14px;backdrop-filter:blur(5px)}
+.codex-card{background:#172a21;border:1px solid #d6b477;box-shadow:0 15px 50px #000b;border-radius:18px;padding:18px;width:min(450px,100%);max-height:76dvh;overflow-y:auto}
+.codex-card p{color:#d7e1d2;line-height:1.55;margin:8px 0}.codex-card .fact{border-bottom:1px solid #395141;padding:8px 0;font-size:13px}.codex-card .fact strong{color:#efd39d}.codex-link{display:inline-flex;align-items:center;justify-content:center;min-height:34px;min-width:36px;padding:5px 8px;margin-left:5px;border-color:#9bb398;background:#294638;color:#ffe1a6}
+.codex-card #codexSelect{min-height:46px}.resource-link{font-size:12px;line-height:1.4;padding:8px 9px;margin:3px;min-width:0}.animal-card{border:1px solid #4c6855;border-radius:11px;padding:9px;margin:7px 0;background:#20382b}.animal-card .meter{display:flex;gap:7px;flex-wrap:wrap;margin:7px 0;font-size:12px}.animal-card .meter span{padding:4px 7px;border-radius:7px;background:#385543}.animal-card .meter span.low{background:#633d32;color:#ffd5ba}
+</style></head><body><div class="shell"><header class="top"><div><h1>METROPOLIS <span style="color:#d7b477">ORIGINS</span> <span style="font-size:11px;color:#b4c5af">MMO V34</span></h1><small>Le monde des premières civilisations · 3D partagée</small></div><span class="tag" id="connection">● Hors ligne</span></header>
+<section id="login" class="login"><h2>🌍 Rejoindre le monde permanent</h2><p class="note">Utilise l'adresse HTTPS de ton serveur Render. Les comptes et bâtiments sont sauvegardés dans PostgreSQL.</p><label>Serveur multijoueur</label><input id="endpoint" placeholder="https://ton-serveur.onrender.com" autocomplete="url"><label>Nom de ta tribu</label><input id="tribe" maxlength="25" value="Tribu des premiers feux"><div class="flex"><button class="primary" id="join">Fonder une tribu</button></div><details class="drawer"><summary>Déjà une tribu ? Retrouver mon village</summary><label>Clé privée de récupération (64 caractères)</label><input id="restoreKey" type="password" autocomplete="off" placeholder="Clé de tribu"><button id="restore">Récupérer ma tribu</button></details><p id="loginStatus" class="warning" style="margin-top:9px"></p></section>
+<main id="game" class="game" hidden><div id="buildConfirm" class="build-confirm" hidden role="dialog" aria-modal="true" aria-labelledby="previewTitle"><div class="build-sheet"><div class="preview-eyebrow">🔨 PRÉVISUALISATION · NON CONSTRUIT</div><h2 id="previewTitle">Choix du bâtiment</h2><p id="previewLocation" class="note"></p><div id="previewCost" class="preview-cost"></div><p id="previewWarning" class="preview-warning" aria-live="polite"></p><div class="preview-buttons"><button id="cancelBuild" type="button">✕ Annuler</button><button id="confirmBuild" type="button" class="primary">✓ Confirmer la construction</button></div></div></div><section class="viewport" id="viewport"><canvas id="canvas" aria-label="Monde 3D interactif"></canvas><div id="weatherFx" aria-hidden="true"></div><div id="loading" class="overlay">Chargement de la carte 3D…</div><div class="hud"><div class="pill"><strong id="identity">Tribu</strong><div id="climate">Saison et jour</div><div id="weatherInfo" class="weather-line">Météo du monde</div><div id="dayNight" class="weather-line">Cycle du jour</div><div id="coords">Zone inconnue</div><div id="currentAction" class="weather-line">🧭 Explorer</div></div><div class="actions"><button id="home" title="Retour au camp">⌂</button><button id="zoomIn" title="Zoom avant">＋</button><button id="zoomOut" title="Zoom arrière">－</button><button id="reload" title="Synchroniser">↻</button></div></div><div class="coord">Glisser : pivoter · Pincer : zoomer · Toucher une parcelle : agir</div></section>
+<nav class="dock" aria-label="Menu principal"><button data-panel="actions" class="active">🧭<span>Carte</span></button><button data-panel="construction">🔨<span>Construire</span></button><button data-panel="villagers">👥<span>Habitants</span></button><button data-panel="familyPanel">🌳<span>Familles</span></button><button data-panel="animalsPanel">🐇<span>Élevage</span></button><button data-panel="settingsPanel">⚙️<span>Options</span></button></nav><section class="bottom"><div id="actions" class="card panel active"><div class="panel-head"><h2>🧭 Exploration</h2><button class="close-panel" aria-label="Masquer le panneau">✕</button></div><div class="quick-summary" id="quickSummary">Ton village se développe…</div><div id="expeditionBanner" class="guide" style="display:none" aria-live="polite"></div><div class="guide">Une expédition suit trois phases : aller, exploration sur place et retour. La carte se dévoile seulement au retour.</div><div class="bar"><button data-mode="explore" class="selected">🧭 Explorer</button><button id="north">↑ Nord</button><button id="west">← Ouest</button><button id="east">Est →</button><button id="south">↓ Sud</button></div></div><div id="construction" class="card panel"><div class="panel-head"><h2>🔨 Construire</h2><button class="close-panel" aria-label="Masquer le panneau">✕</button></div><div class="guide">Touche le nom d’un bâtiment pour lire sa fiche, puis appuie sur « Choisir et placer ». Touche ensuite une parcelle libre : son aperçu apparaît. Confirme pour dépenser les ressources, ou annule pour garder tes réserves.</div><div id="modeTools"><button data-mode="hut">Hutte</button><button data-mode="fire">Foyer</button><button data-mode="farm">Champ</button><button data-mode="store">Réserve</button><button data-mode="work">Atelier</button><button data-mode="gather">Collecte</button><button data-mode="palisade">Palissade</button><button data-mode="guard">Garde</button><button data-mode="port">⚓ Port primitif</button><button data-mode="rabbit_trap">🐇 Piège à lapins</button><button data-mode="pen">🐖 Enclos</button></div><div id="costs"></div><div class="guide" style="margin-top:9px"><strong>⚓ Navigation primitive</strong><p>Construis un port en bois sur une côte, puis recherche la navigation (25 savoir) pour fabriquer une pirogue (35 bois, 8 pierre). Explore ensuite les cases maritimes.</p><div id="navSummary" class="note">Recherche non effectuée.</div><div class="bar"><button id="researchNavigation">📜 Rechercher navigation</button><button id="craftBoat">🛶 Construire bateau</button></div></div></div><div id="villagers" class="card panel"><div class="panel-head"><h2>👥 Habitants et besoins</h2><button class="close-panel" aria-label="Masquer le panneau">✕</button></div><div id="needsSummary" class="guide"></div><div class="guide" id="jobGuide">📖 Infos métiers : <span id="jobCodex"></span></div><div class="guide">Renommage autorisé uniquement pour les deux fondateurs et les enfants nés dans ta tribu. Une formation de métier dure 3 jours de jeu : aucun travail pendant ce temps.</div><div id="stocks" class="stat"></div><div id="people" class="jobs"></div></div><div id="animalsPanel" class="card panel"><div class="panel-head"><h2>🐇 Piégeage et élevage</h2><button class="close-panel" aria-label="Masquer le panneau">✕</button></div><div class="guide">Construis un piège dans une forêt ou une plaine et un enclos pour accueillir les lapins. Affecte un éleveur (formation de trois jours) pour permettre la reproduction des animaux adultes mâle et femelle. La faune rencontrée dépend du biome exploré. Les expéditions peuvent ramener des animaux sauvages.</div><div id="animalSummary" class="quick-summary">Aucun animal pour le moment.</div><div id="encounterChoices"></div><div id="animalHerd" class="jobs"></div></div><div id="familyPanel" class="card panel"><div class="panel-head"><h2>🌳 Familles et naissances</h2><button class="close-panel" aria-label="Masquer le panneau">✕</button></div><label class="muted" for="babyName">Prénom du nouveau-né (facultatif)</label><input id="babyName" maxlength="24" placeholder="Prénom du bébé" style="width:100%;margin-top:5px"><div class="birth-parents"><select id="mother" aria-label="Premier parent"></select><select id="father" aria-label="Second parent"></select></div><div class="bar"><button id="birth">👶 Naissance</button></div><details class="drawer"><summary>🌳 Arbre familial</summary><div id="family" class="family"></div></details></div><div id="settingsPanel" class="card panel"><div class="panel-head"><h2>⚙️ Options</h2><button class="close-panel" aria-label="Masquer le panneau">✕</button></div><div class="bar"><button id="refreshPeople">↻ Actualiser</button><button id="exportKey">🔑 Exporter ma clé</button></div><details class="drawer"><summary>Session et sécurité</summary><p class="note">La clé exportée donne accès à ta tribu : garde-la secrète. La déconnexion efface seulement la clé de cet appareil.</p><button id="forget">Déconnecter cet appareil</button></details></div></section><div id="codexModal" class="codex-backdrop" hidden><section class="codex-card" role="dialog" aria-modal="true" aria-labelledby="codexTitle"><div class="panel-head"><h2 id="codexTitle">Encyclopédie</h2><button id="codexClose" aria-label="Fermer la fiche">✕</button></div><div id="codexBody"></div><button id="codexSelect" class="primary" type="button" hidden style="width:100%;margin-top:12px">🔨 Choisir ce bâtiment</button><button id="codexDone" class="primary" style="width:100%;margin-top:12px">Compris</button></section></div><div id="toast" role="status" aria-live="polite" hidden></div><div id="status" class="sr-only" aria-live="polite"></div></main></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
+const $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+let api=localStorage.getItem('mo_mmo_api')||'',token=localStorage.getItem('mo_mmo_token')||'',player=null,chunk=null,village=null,config=null,mode='explore',tileIndex=[],worldGroup=null,rayTargets=[],focus={cx:32,cy:32};
+$('endpoint').value=api;let npcs=[],npcGroup=null,herdModels=[];let scene,camera,renderer,raycaster,mouse,camAngle=.64,camElev=.82,camDist=48,anchor=new THREE.Vector3(0,0,0),pointer=new Map(),dragged=false,lastTouch=0,refreshing=false;
+const colors={water:0x387b90,grass:0x73965e,forest:0x416749,pine:0x305248,rainforest:0x285d46,rock:0x89918a,highland:0x77817a,snowrock:0xb3c5c4,tundra:0xaeb5a0,marsh:0x647a54,desert:0xc5ab76,scrub:0x968763,drygrass:0xa4a06b,fog:0x122019};
+let expeditionEndsAt=0;
+let pendingBuild=null,ghostBuild=null,buildBusy=false;let codexSelect=null;
+const buildNames={hut:'Hutte',fire:'Foyer',farm:'Champ',store:'Réserve',work:'Atelier',gather:'Collecte',palisade:'Palissade',guard:'Garde',port:'Port primitif',rabbit_trap:'Piège à lapins',pen:'Enclos'};
+const codexJobs={
+ 'sans métier':['Sans métier','Aucune production. Disponible pour une formation de métier.'],
+ 'bûcheron':['Bûcheron','Produit +1 bois par jour de jeu actif. Utile pour les huttes, ports, pièges et bateaux.'],
+ 'cueilleur':['Cueilleur','Produit +1 nourriture par jour de jeu actif.'],
+ 'chasseur':['Chasseur','Produit +2 nourritures par jour de jeu actif.'],
+ 'tailleur de pierre':['Tailleur de pierre','Produit +1 pierre par jour de jeu actif.'],
+ 'savant':['Savant','Produit +1 savoir par jour de jeu actif. Débloque les recherches.'],
+ 'pêcheur':['Pêcheur','Produit +3 nourritures par jour de jeu actif, uniquement si la tribu possède un port.'],
+ 'éleveur':['Éleveur','Nécessite un enclos. Permet la reproduction des couples adultes en bonne santé ; nourrit et abreuve les animaux depuis les réserves.']};
+const codexBuildings={
+ hut:'Logement de 3 habitants. Améliore leur récupération d’énergie et les protège des intempéries.',
+ fire:'Foyer primitif : repère du camp et première infrastructure communautaire.',
+ farm:'Champ cultivé : infrastructure agricole de la tribu. La production directe est calculée par les métiers, pas par le champ.',
+ store:'Réserve : bâtiment de stockage. Le plafond des ressources reste fixé à 1 000 dans cette alpha.',
+ work:'Atelier : lieu de travail visuel pour les artisans et savants.',
+ gather:'Zone de collecte : lieu de travail visuel pour les cueilleurs et bûcherons.',
+ palisade:'Palissade primitive. Défense visuelle ; le système de guerre n’est pas encore activé.',
+ guard:'Tour de garde. Défense visuelle ; pas encore de bonus de combat.',
+ port:'Port primitif construit sur la côte. Requis pour la pêche et la fabrication de pirogues.',
+ rabbit_trap:'Capture jusqu’à un lapin par piège, lors des vérifications périodiques (3 jours minimum), si un enclos dispose de place.',
+ pen:'Enclos : accueille jusqu’à 8 animaux ; nécessaire pour la capture, l’élevage et la reproduction.'};
+const codexResources={wood:['Bois','Récolté par les bûcherons. Sert à bâtir les maisons, structures et bateaux.'],stone:['Pierre','Produite par les tailleurs de pierre. Sert à construire et à fabriquer les pirogues.'],food:['Nourriture','Produite par les cueilleurs, chasseurs et pêcheurs ; consommée par les habitants et par les soins/repas des troupeaux.'],knowledge:['Savoir','Produit par les savants. La recherche Navigation primitive coûte 25 savoir.']};
+function codexOpen(category,key){
+ codexSelect=null;$('codexSelect').hidden=true;
+ const title=$('codexTitle'),body=$('codexBody');body.replaceChildren();
+ const p=t=>{const n=document.createElement('p');n.textContent=t;body.append(n)};
+ const fact=(name,value)=>{const d=document.createElement('div');d.className='fact';const b=document.createElement('strong');b.textContent=name+': ';d.append(b,document.createTextNode(value));body.append(d)};
+ if(category==='job'){
+  const [name,desc]=codexJobs[key]||[key,'Métier inconnu'];title.textContent='📚 '+name;p(desc);
+  fact('Formation',key==='sans métier'?'Aucune':'3 jours de jeu (90 minutes réelles), sans production ni autre affectation');
+  fact('Condition','Au moins 16 ans ; éleveur : enclos ; pêcheur : port pour produire');
+ }else if(category==='building'){
+  title.textContent='🔨 '+(buildNames[key]||key);p(codexBuildings[key]||'Bâtiment du village');
+  const cost=config?.costs?.[key];if(cost)fact('Coût',`${cost.wood} bois · ${cost.stone} pierre · ${cost.food} nourriture`);
+  fact('Construction','Choisir ce bâtiment, toucher une parcelle, vérifier son aperçu puis confirmer. Aucun coût avant confirmation.');
+  codexSelect=key; $('codexSelect').hidden=false; $('codexSelect').textContent='🔨 Choisir '+(buildNames[key]||key)+' et placer';
+ }else if(category==='resource'){
+  const [name,desc]=codexResources[key]||[key,'Ressource du village'];title.textContent='📦 '+name;p(desc);
+  fact('Réserve actuelle',String(village?.resources?.[key]??'–'));fact('Simulation','Calculée et sauvegardée sur le serveur');
+ }else if(category==='animal'){
+  title.textContent='🐾 '+key;p('Animal du village. Les besoins en nourriture, eau et santé sont calculés au fil des jours de jeu.');
+  fact('Reproduction','Mâle + femelle de la même espèce, adultes, en bonne santé, et un éleveur actif');
+  fact('Soin manuel','Coûte 3 nourritures : +25 faim, +25 soif, +12 santé');
+ }
+ $('codexModal').hidden=false;
+}
+$('codexClose').onclick=$('codexDone').onclick=()=>$('codexModal').hidden=true;
+$('codexSelect').onclick=()=>{if(!codexSelect)return;chooseBuilding(codexSelect);$('codexModal').hidden=true};
+$('codexModal').addEventListener('click',e=>{if(e.target===$('codexModal'))$('codexModal').hidden=true});
+function infoButton(category,key){const b=document.createElement('button');b.type='button';b.className='codex-link';b.textContent='ⓘ';b.setAttribute('aria-label','Informations sur '+key);b.onclick=e=>{e.stopPropagation();codexOpen(category,key)};return b}
+
+function clearPreview(){
+  pendingBuild=null;$('buildConfirm').hidden=true;
+  if(ghostBuild){ghostBuild.parent?.remove(ghostBuild);ghostBuild.traverse(o=>{if(o.isMesh&&o.material?.userData?.previewMaterial)o.material.dispose()});ghostBuild=null}
+}
+function showBuildPreview(x,y,kind){
+  clearPreview();if(!chunk||!config||!village||!worldGroup){status('Carte indisponible : recharge le village.');return;}
+  const lx=x-chunk.cx*32,ly=y-chunk.cy*32;
+  const cost=config.costs[kind];if(!cost||lx<0||lx>=32||ly<0||ly>=32){status('Impossible de prévisualiser cette parcelle.');return;}
+  pendingBuild={x,y,kind};
+  const occupied=chunk.buildings.some(b=>Number(b.x)===x&&Number(b.y)===y);
+  const known=(chunk.discovered||[]).some(p=>Number(p.x)===x&&Number(p.y)===y);
+  const r=village.resources;
+  const enough=r.wood>=cost.wood&&r.stone>=cost.stone&&r.food>=cost.food;
+  const water=chunk.types?.[ly]?.[lx]==='water';
+  const problem=occupied?'Cette parcelle est déjà occupée.':!known?'Cette parcelle n’est pas encore explorée.':water?'Impossible de bâtir dans l’eau.':!enough?'Tu n’as pas assez de ressources.':'';
+  const h=.25+(Number(chunk.heights?.[ly]?.[lx])||1)*.27;
+  const count=worldGroup.children.length;
+  structure(kind,lx-15.5,h+.06,ly-15.5,true);
+  ghostBuild=worldGroup.children[count]||null;
+  if(ghostBuild)ghostBuild.traverse(o=>{if(o.isMesh){const mat=o.material.clone();mat.transparent=true;mat.opacity=.52;mat.depthWrite=false;mat.emissive?.setHex(problem?0x662222:0x16583b);mat.userData.previewMaterial=true;o.material=mat}});
+  $('previewTitle').textContent=buildNames[kind]||kind;
+  $('previewLocation').textContent=`Parcelle ${x}, ${y} · Aperçu translucide : aucune ressource prélevée`;
+  $('previewCost').textContent=`🪵 ${cost.wood} bois  ·  🪨 ${cost.stone} pierre  ·  🍎 ${cost.food} nourriture`;
+  $('previewWarning').textContent=problem||'Confirme pour construire réellement. Tu peux encore annuler.';
+  $('confirmBuild').disabled=Boolean(problem);$('buildConfirm').hidden=false;
+  document.querySelectorAll('.panel,[data-panel]').forEach(e=>e.classList.remove('active'));
+}
+$('cancelBuild').onclick=()=>{clearPreview();status('Construction annulée. Aucune ressource dépensée.')};
+$('confirmBuild').onclick=async()=>{
+  if(buildBusy||!pendingBuild)return;
+  buildBusy=true;$('confirmBuild').disabled=true;
+  const b={...pendingBuild};
+  try{await call('/api/build','POST',b);clearPreview();status('✅ Bâtiment construit : ressources déduites après confirmation.');await loadVillage();await chunkAt(focus.cx,focus.cy)}
+  catch(e){status('⚠️ '+e.message);$('previewWarning').textContent='⚠️ '+e.message;$('confirmBuild').disabled=false}
+  finally{buildBusy=false}
+};
+
+function tripView(e){
+ const b=$('expeditionBanner');if(!e){expeditionEndsAt=0;b.style.display='none';return;}
+ const start=new Date(e.started_at).getTime(),out=Number(e.outward_ms),stay=Number(e.stay_ms),back=Number(e.return_ms);
+ const now=Date.now(),remaining=Math.max(0,start+out+stay+back-now);
+ const phase=now<start+out?'🚶 Aller':now<start+out+stay?'🔎 Exploration':now<start+out+stay+back?'🏠 Retour':'✅ Retour terminé';
+ b.style.display='block';b.textContent=`${phase} vers ${e.x}, ${e.y} · Temps total restant : ${Math.ceil(remaining/60e3)} min ${Math.floor(remaining%60e3/1000)} s. La zone ne sera révélée qu’au retour.`;
+ expeditionEndsAt=start+out+stay+back;
+}
+let toastTimeout=null;function status(s){$('status').textContent=s;$('loginStatus').textContent=s;if(!$('game').hidden){$('toast').hidden=false;$('toast').textContent=s;clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>$('toast').hidden=true,4100)}}
+function showPanel(id){document.querySelectorAll('.panel').forEach(e=>e.classList.toggle('active',e.id===id));document.querySelectorAll('[data-panel]').forEach(e=>e.classList.toggle('active',e.dataset.panel===id))}
+document.querySelectorAll('[data-panel]').forEach(e=>e.onclick=()=>showPanel(e.dataset.panel));document.querySelectorAll('.close-panel').forEach(e=>e.onclick=()=>{document.querySelectorAll('.panel,[data-panel]').forEach(x=>x.classList.remove('active'))});
+
+async function call(path,method='GET',body){const res=await fetch(api+path,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(body?{body:JSON.stringify(body)}:{})});const data=await res.json().catch(()=>({error:'Réponse serveur invalide'}));if(!res.ok)throw Error(data.error||`HTTP ${res.status}`);return data}
+function endpoint(){const url=$('endpoint').value.trim().replace(/\/$/,'');if(!/^https:\/\/[a-z\d.-]+(?::\d+)?$/i.test(url))throw Error('Une adresse de serveur HTTPS est requise');return url}
+function setup3d(){if(renderer)return;const cv=$('canvas');renderer=new THREE.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.65));renderer.outputColorSpace=THREE.SRGBColorSpace;scene=new THREE.Scene();scene.background=new THREE.Color(0x91afb6);scene.fog=new THREE.FogExp2(0x91afb6,.012);camera=new THREE.PerspectiveCamera(52,1,.1,200);raycaster=new THREE.Raycaster();mouse=new THREE.Vector2();const skyLight=new THREE.HemisphereLight(0xd8edf0,0x42573b,2.1);scene.add(skyLight);const sun=new THREE.DirectionalLight(0xffdda7,2.15);sun.position.set(-20,50,30);scene.add(sun);const base=new THREE.Mesh(new THREE.PlaneGeometry(150,150),new THREE.MeshStandardMaterial({color:0x163127,roughness:1}));base.rotation.x=-Math.PI/2;base.position.y=-.31;scene.add(base);worldGroup=new THREE.Group();scene.add(worldGroup);const resize=()=>{const r=$('viewport').getBoundingClientRect();const w=Math.max(r.width,100),h=Math.max(r.height,180);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();};new ResizeObserver(resize).observe($('viewport'));resize();updateCam();(function animate(){requestAnimationFrame(animate);
+   // Cycle jour/nuit local partagé selon une horloge de 30 minutes, sans prétendre à une simulation continue serveur.
+   const phase=((Date.now()-Date.UTC(2026,10,18))%(30*60*1000))/(30*60*1000);
+   const daylight=Math.max(.12,(Math.sin(phase*2*Math.PI-Math.PI/2)+1)/2);
+   sun.intensity=.3+daylight*1.85;skyLight.intensity=.5+daylight*1.45;
+   scene.background.setRGB(.07+daylight*.48,.11+daylight*.57,.18+daylight*.59);
+   scene.fog.color.copy(scene.background);
+   animateVillagers();animateAnimals();renderer.render(scene,camera)})();let gestureStart=null,gestureRotated=false;
+ cv.addEventListener('pointerdown',e=>{if(pointer.size===0){gestureStart={x:e.clientX,y:e.clientY,t:performance.now()};gestureRotated=false}if(pointer.size>0)gestureRotated=true;cv.setPointerCapture(e.pointerId);pointer.set(e.pointerId,{x:e.clientX,y:e.clientY});});
+ cv.addEventListener('pointermove',e=>{if(!pointer.has(e.pointerId))return;const old=pointer.get(e.pointerId);const dx=e.clientX-old.x,dy=e.clientY-old.y;pointer.set(e.pointerId,{x:e.clientX,y:e.clientY});if(gestureStart&&Math.hypot(e.clientX-gestureStart.x,e.clientY-gestureStart.y)>12)gestureRotated=true;
+ if(pointer.size===1){if(gestureRotated){camAngle-=dx*.009;camElev=clamp(camElev+dy*.006,.25,1.36);updateCam()}}
+ else if(pointer.size===2){gestureRotated=true;const pairs=Array.from(pointer.values()),d=Math.hypot(pairs[0].x-pairs[1].x,pairs[0].y-pairs[1].y);if(window._moPinch)camDist=clamp(camDist*window._moPinch/d,15,92);window._moPinch=d;updateCam()}});
+ cv.addEventListener('pointerup',e=>{const start=gestureStart;const tap=pointer.size===1&&!gestureRotated&&start&&Math.hypot(e.clientX-start.x,e.clientY-start.y)<=12&&performance.now()-start.t<850;pointer.delete(e.pointerId);if(!pointer.size){window._moPinch=0;gestureStart=null}if(tap)pick(e)});
+ cv.addEventListener('pointercancel',e=>{pointer.delete(e.pointerId);window._moPinch=0;gestureStart=null;gestureRotated=true});cv.addEventListener('wheel',e=>{e.preventDefault();camDist=clamp(camDist+e.deltaY*.025,15,92);updateCam()},{passive:false});}
+function updateCam(){if(!camera)return;camera.position.set(anchor.x+Math.sin(camAngle)*camDist*Math.cos(camElev),anchor.y+Math.sin(camElev)*camDist,anchor.z+Math.cos(camAngle)*camDist*Math.cos(camElev));camera.lookAt(anchor)}
+// V27 : les positions visibles sont animées localement. Les métiers et filiations viennent du serveur.
+const bodyGeo=new THREE.CylinderGeometry(.17,.20,.55,6),headGeo=new THREE.SphereGeometry(.20,7,5);
+function spawnVillagers(){
+ npcs=[];if(!worldGroup||!chunk||!village||!player)return;
+ const myBuildings=chunk.buildings.filter(b=>String(b.player_id)===String(player.id));
+ if(!myBuildings.length)return;
+ const home=myBuildings.find(b=>b.kind==='chief')||myBuildings[0];
+ const targets={bûcheron:['gather','work'],cueilleur:['gather','farm'],chasseur:['guard','gather'], 'tailleur de pierre':['work'],savant:['work','chief'],éleveur:['pen']};
+ npcGroup=new THREE.Group();worldGroup.add(npcGroup);
+ const hs=chunk.heights;
+ const local=(b)=>{const lx=b.x-chunk.cx*32,lz=b.y-chunk.cy*32;return {x:lx-15.5,z:lz-15.5,y:.25+(Number(hs[lz]?.[lx])||1)*.27}};
+ village.people.slice(0,30).forEach((person,i)=>{
+  const options=myBuildings.filter(b=>(person.training_until_day?['chief','work']:targets[person.job]||['hut','chief']).includes(b.kind));
+  const goal=local(options[i%Math.max(1,options.length)]||home),start=local(home);
+  const model=new THREE.Group();const small=person.age<16,scale=small?.62:1;
+  const cloth=new THREE.Mesh(bodyGeo,material([0x8fa1b8,0xc29269,0x849c70,0xb78b9d][i%4]));cloth.position.y=.42;model.add(cloth);
+  const head=new THREE.Mesh(headGeo,material(0xd4ac83));head.position.y=.90;model.add(head);
+  model.scale.setScalar(scale);npcGroup.add(model);
+  const offset=(i%5)*.19-.38,offz=(Math.floor(i/5)%5)*.15-.30;
+  npcs.push({model,start,goal,training:Boolean(person.training_until_day),offset,offz,phase:(i*1.73)%6.28,journey:4.5+(i%4)*1.5,at:performance.now()/1000});
+ });
+}
+function animateVillagers(){if(!npcs.length)return;const now=performance.now()/1000;
+ // Un jour de jeu dure 30 min : matin = travail, nuit = repos. Animation locale uniquement.
+ const dayPart=(Date.now()-Date.UTC(2026,10,18))%(30*60*1000)/(30*60*1000);
+ const working=dayPart>.20&&dayPart<.77;
+ for(const n of npcs){const pulse=(now-n.at)/n.journey+n.phase;const v=(!working||n.training)?0:(Math.sin(pulse)+1)/2;const x=n.start.x+(n.goal.x-n.start.x)*v+n.offset,z=n.start.z+(n.goal.z-n.start.z)*v+n.offz;n.model.position.set(x,n.start.y+(n.goal.y-n.start.y)*v+.05+Math.abs(Math.cos(pulse))*.035,z);n.model.rotation.y=Math.atan2(n.goal.x-n.start.x,n.goal.z-n.start.z)+(Math.cos(pulse)>0?0:Math.PI)}}
+// V33: animaux 3D légers, animés localement près des enclos du propriétaire.
+function spawnAnimals(){
+ herdModels=[];if(!worldGroup||!chunk||!village||!player)return;
+ const pens=chunk.buildings.filter(b=>b.kind==='pen'&&String(b.player_id)===String(player.id));
+ if(!pens.length)return;
+ const animals=(village.animals||[]).slice(0,Math.min(32,pens.length*8));
+ for(let i=0;i<animals.length;i++){
+  const a=animals[i],p=pens[Math.floor(i/8)%pens.length],lx=p.x-chunk.cx*32,lz=p.y-chunk.cy*32;
+  if(lx<0||lx>=32||lz<0||lz>=32)continue;
+  const group=new THREE.Group(),t=a.species==='lapin'?.42:a.species==='cochon'?.74:1.05;
+  const col=a.species==='lapin'?0xc2a788:a.species==='cochon'?0x9c725a:0xb9ad8d;
+  addMesh(group,new THREE.SphereGeometry(.46,7,5),material(col),0,.42,0,.95,.65,.65);
+  addMesh(group,new THREE.SphereGeometry(.32,7,5),material(col),0,.58,.35,.9,.9,1);
+  if(a.species==='lapin')for(const x of [-.16,.16])addMesh(group,cube,material(col),x,.99,.38,.15,.5,.13);
+  else for(const x of [-.27,.27])for(const z of [-.25,.25])addMesh(group,cylinder,material(0x655643),x,.18,z,.09,.32,.09);
+  group.scale.setScalar(t);worldGroup.add(group);
+  herdModels.push({group,x:lx-15.5,z:lz-15.5,y:.36+(Number(chunk.heights?.[lz]?.[lx])||1)*.27,phase:i*2.17,health:a.health});
+ }
+}
+function animateAnimals(){
+ const t=performance.now()/1000;
+ for(const a of herdModels){const speed=a.health<30?.15:.44;const angle=t*speed+a.phase;const r=.28+(Math.sin(a.phase*7)+1)*.12;
+  a.group.position.set(a.x+Math.sin(angle)*r,a.y+Math.sin(t*3+a.phase)*.018,a.z+Math.cos(angle)*r);
+  a.group.rotation.y=angle+Math.PI/2;
+ }
+}
+const matCache=new Map();function material(hex,roughness=1){const key=hex+','+roughness;if(!matCache.has(key))matCache.set(key,new THREE.MeshStandardMaterial({color:hex,roughness,metalness:0}));return matCache.get(key)}
+function addMesh(group,geo,mat,x,y,z,sx=1,sy=1,sz=1){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);group.add(m);return m}
+const cube=new THREE.BoxGeometry(1,1,1),cone=new THREE.ConeGeometry(1,1,5),roof=new THREE.ConeGeometry(1,1,4),cylinder=new THREE.CylinderGeometry(1,1,1,6);
+function structure(kind,x,y,z,own){const g=new THREE.Group();g.position.set(x,y,z);worldGroup.add(g);const timber=material(own?0x91663d:0x677f83),roofMat=material(own?0xc3a06b:0x72aabe),stone=material(0x858a81),straw=material(0xb5a56f),green=material(0x65854d);
+if(kind==='rabbit_trap'){addMesh(g,cube,timber,0,.14,0,.92,.18,.84);addMesh(g,cube,material(0x98724c),0,.45,0,.75,.55,.09);addMesh(g,cylinder,timber,-.43,.5,0,.08,.86,.08)}
+if(kind==='pen'){for(const xx of [-.72,.72])for(const zz of [-.72,.72])addMesh(g,cylinder,timber,xx,.48,zz,.11,.92,.11);for(const zz of [-.72,.72])addMesh(g,cube,timber,0,.63,zz,1.54,.12,.1);for(const xx of [-.72,.72])addMesh(g,cube,timber,xx,.63,0,.1,.12,1.54)}
+if(kind==='port'){addMesh(g,cube,timber,0,.18,0,1.65,.30,1.5);for(const xx of [-.65,.65])for(const zz of [-.55,.55])addMesh(g,cylinder,timber,xx,.42,zz,.16,.84,.16);addMesh(g,cube,material(0x785639),0,.12,1.05,.65,.16,.8);addMesh(g,cone,material(0xe8dbb1),0,1.30,0,.8,1.15,.13);addMesh(g,cylinder,timber,0,1.06,0,.08,1.7,.08)}
+else if(kind==='fire'){addMesh(g,cylinder,stone,0,.15,0,.58,.22,.58);addMesh(g,cone,material(0xff8d37),0,.76,0,.32,.96,.32);addMesh(g,cone,material(0xf6c966),0,.79,0,.14,.57,.14)}
+else if(kind==='palisade'){for(let i=-1;i<=1;i++)addMesh(g,cylinder,timber,i*.35,.65,0,.16,1.3,.16)}
+else if(kind==='farm'||kind==='gather'){addMesh(g,cube,material(0x55442b),0,.07,0,1.4,.14,1.4);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)addMesh(g,cone,kind==='farm'?straw:green,i*.38,.32,j*.38,.11,.42,.11)}
+else if(kind==='guard'){for(let i=-1;i<=1;i+=2)for(let j=-1;j<=1;j+=2)addMesh(g,cylinder,timber,i*.55,1,j*.55,.16,2,.16);addMesh(g,cube,timber,0,2,0,1.6,.3,1.6);addMesh(g,roof,roofMat,0,2.62,0,1.45,1,1.45)}
+else if(kind==='store'){addMesh(g,cube,stone,0,.6,0,1.7,1.2,1.5);addMesh(g,roof,roofMat,0,1.6,0,1.5,.85,1.5);addMesh(g,cube,timber,-.45,.32,.82,.37,.65,.15)}
+else if(kind==='work'){addMesh(g,cube,timber,0,.6,0,1.5,1.2,1.5);addMesh(g,roof,material(0x555f59),0,1.57,0,1.48,1.1,1.48);addMesh(g,cube,stone,1,.4,0,.65,.55,.6);addMesh(g,cube,material(0x413b36),1,.85,0,.85,.3,.7)}
+else{const chief=kind==='chief';addMesh(g,cube,chief?stone:timber,0,chief?.95:.62,0,chief?2.2:1.55,chief?1.9:1.25,chief?2.1:1.5);addMesh(g,roof,roofMat,0,chief?2.35:1.6,0,chief?2:1.42,chief?1.45:1.1,chief?2:1.42);addMesh(g,cube,material(0x493d2e),0,.45,chief?1.08:.78,.46,.9,.1);if(chief){addMesh(g,cylinder,timber,1.32,1.4,0,.14,2.8,.14);addMesh(g,cone,material(0xe8bc62),1.32,2.94,0,.48,.7,.12)}}
+return g}
+function rng(x,y){let n=Math.sin(x*12.9898+y*78.233)*43758.5453;return n-Math.floor(n)}
+function drawChunk(){if(!chunk||!worldGroup)return;worldGroup.clear();rayTargets=[];tileIndex=[];const discovered=new Set(chunk.discovered.map(q=>q.x+','+q.y)),height=chunk.heights||Array.from({length:32},()=>Array(32).fill(1));const byBiome=new Map();const treeByType=new Map();const dummy=new THREE.Object3D();let knownCount=0;
+for(let ly=0;ly<32;ly++)for(let lx=0;lx<32;lx++){const x=lx+chunk.cx*32,y=ly+chunk.cy*32,known=discovered.has(x+','+y),type=known?chunk.types[ly][lx]:'fog',h=known?Number(height[ly][lx])||1:0;const key=type;let info=byBiome.get(key);if(!info){info=[];byBiome.set(key,info)}info.push({lx,ly,x,y,h,known,type});if(known)knownCount++}
+for(const [type,tiles]of byBiome){const mesh=new THREE.InstancedMesh(cube,material(colors[type]||0x76916a),tiles.length);mesh.userData.tiles=tiles;mesh.userData.pickable=true;tiles.forEach((t,i)=>{const iswater=t.type==='water';const top=iswater?.07:.24+t.h*.27;dummy.position.set(t.lx-15.5,top-.33,t.ly-15.5);dummy.scale.set(.98,Math.max(.15,top+.55),.98);dummy.rotation.set(0,0,0);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix)});mesh.instanceMatrix.needsUpdate=true;worldGroup.add(mesh);rayTargets.push(mesh)}
+const treeTrunk=new THREE.InstancedMesh(cylinder,material(0x665139),220),treeTop=new THREE.InstancedMesh(cone,material(0x31553e),220);let tc=0;const rockMesh=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(.55,0),material(0x969a92),170);let rc=0;for(let ly=0;ly<32;ly++)for(let lx=0;lx<32;lx++){const x=lx+chunk.cx*32,y=ly+chunk.cy*32;if(!discovered.has(x+','+y))continue;const type=chunk.types[ly][lx],h=.24+(Number(height[ly][lx])||1)*.27,n=rng(x,y);if(['forest','pine','rainforest','scrub'].includes(type)&&n>.69&&tc<220){const xx=lx-15.5+.18*(rng(y,x)-.5),zz=ly-15.5;dummy.rotation.set(0,0,0);dummy.position.set(xx,h+.45,zz);dummy.scale.set(.15,.92,.15);dummy.updateMatrix();treeTrunk.setMatrixAt(tc,dummy.matrix);dummy.position.y=h+1.38;dummy.scale.set(type==='scrub'?.57:.78,1.65,type==='scrub'?.57:.78);dummy.updateMatrix();treeTop.setMatrixAt(tc,dummy.matrix);tc++}if(['rock','highland','snowrock'].includes(type)&&n>.77&&rc<170){dummy.position.set(lx-15.5,h+.30,ly-15.5);dummy.scale.set(.72,.63,.72);dummy.rotation.set(0,n*6.28,0);dummy.updateMatrix();rockMesh.setMatrixAt(rc++,dummy.matrix)}}treeTrunk.count=treeTop.count=tc;rockMesh.count=rc;treeTrunk.instanceMatrix.needsUpdate=true;treeTop.instanceMatrix.needsUpdate=true;rockMesh.instanceMatrix.needsUpdate=true;worldGroup.add(treeTrunk,treeTop,rockMesh);
+for(const b of chunk.buildings){const lx=b.x-chunk.cx*32,ly=b.y-chunk.cy*32;if(lx<0||ly<0||lx>=32||ly>=32)continue;const h=.25+(Number(height[ly][lx])||1)*.27;structure(b.kind,lx-15.5,h,ly-15.5,String(b.player_id)===String(player.id))}
+// Pirogues visibles près du port du joueur (indication visuelle ; trajet maritime simulé côté serveur).
+if(village?.resources?.boats>0){const p=chunk.buildings.find(b=>b.kind==='port'&&String(b.player_id)===String(player.id));if(p){const bx=p.x-chunk.cx*32-15.5,bz=p.y-chunk.cy*32-15.5;for(let n=0;n<Math.min(3,Number(village.resources.boats));n++){const boat=new THREE.Group();boat.position.set(bx+.45+n*.32,.39,bz+1.05+n*.19);worldGroup.add(boat);addMesh(boat,cube,material(0x654328),0,0,0,.72,.20,1.35);addMesh(boat,cube,material(0xb89564),0,.20,0,.48,.15,.95);addMesh(boat,cylinder,material(0x604b30),0,.63,0,.045,.88,.045);addMesh(boat,cone,material(0xddd4b2),0,.68,0,.43,.60,.10)}}}
+for(const p of chunk.settlements){const lx=p.x-chunk.cx*32,ly=p.y-chunk.cy*32;const marker=addMesh(worldGroup,cone,material(String(p.id)===String(player.id)?0xffca69:0x73c2f2),lx-15.5,3.35,ly-15.5,.40,.78,.40);marker.rotation.z=Math.PI}
+spawnVillagers();spawnAnimals();$('coords').textContent=`Secteur ${chunk.cx},${chunk.cy} · ${knownCount} parcelles découvertes`;anchor.set(0,0,0);updateCam()}
+async function chunkAt(cx,cy){clearPreview();focus={cx:clamp(cx,0,63),cy:clamp(cy,0,63)};chunk=await call(`/api/chunk?cx=${focus.cx}&cy=${focus.cy}`);drawChunk()}
+function pick(e){if(!chunk)return;const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects(rayTargets,false);if(!hits.length){status('Aucune parcelle sélectionnée : touche le sol visible.');return;}const hit=hits[0],t=hit.object.userData.tiles[hit.instanceId];if(t)action(t.x,t.y)}
+async function action(x,y){if(mode!=='explore'){showBuildPreview(x,y,mode);return;}try{status('Enregistrement en cours…');const response=await call('/api/explore','POST',{x,y});tripView(response.expedition);status('🧭 Expédition lancée : aller + exploration + retour avant découverte !');await chunkAt(focus.cx,focus.cy);await loadVillage()}catch(e){status('⚠️ '+e.message)}}
+async function loadVillage(){
+ village=await call('/api/village');tripView(village.expedition);$('climate').textContent=`Jour ${village.world.day} · ${village.world.season}`;
+ const meteo=village.world.weather||{kind:'Clair',temperature:15};const fx=$('weatherFx');fx.className=meteo.kind==='Neige'?'snow':['Pluie','Orage'].includes(meteo.kind)?'rain':'';const t=((Date.now()-Date.UTC(2026,10,18))%(30*60*1000))/(30*60*1000);$('dayNight').textContent=t<.20||t>.77?'🌙 Nuit — habitants au repos':'☀️ Journée — habitants au travail';$('weatherInfo').textContent=`${meteo.kind==='Neige'?'❄️':meteo.kind==='Pluie'?'🌧️':meteo.kind==='Orage'?'⛈️':meteo.kind==='Vent'?'🌬️':'☀️'} ${meteo.kind} · ${meteo.temperature} °C`;
+ const r=village.resources; $('navSummary').textContent=`${r.navigation_researched?'✅ Navigation découverte':'🔒 Navigation non recherchée (25 savoir)'} · 🛶 ${r.boats||0} bateau(x) · ${village.hasPort?'⚓ Port disponible':'⚠️ Aucun port'}`;$('researchNavigation').disabled=Boolean(r.navigation_researched);$('craftBoat').disabled=!r.navigation_researched||!village.hasPort||Number(r.boats)>=3;$('stocks').replaceChildren();for(const [key,icon,label] of [['wood','🪵','Bois'],['stone','🪨','Pierre'],['food','🍎','Nourriture'],['knowledge','📚','Savoir']]){const b=document.createElement('button');b.className='resource-link';b.textContent=`${icon} ${r[key]} ${label} ⓘ`;b.onclick=()=>codexOpen('resource',key);$('stocks').append(b)};
+ const creatures=village.animals||[],pending=village.encounters||[];
+ $('animalSummary').textContent=`🐇 ${creatures.filter(a=>a.species==='lapin').length} lapin(s) · 🐖 ${creatures.filter(a=>a.species==='cochon').length} cochon(s) · 🐄 ${creatures.filter(a=>a.species==='vache').length} vache(s) · Places ${creatures.length}/${village.animalCapacity||0} · Pièges ${village.traps||0} · ${village.activeBreeder?'✅ Éleveur actif':'⚠️ Aucun éleveur actif : reproduction suspendue'}`;
+ const encounters=$('encounterChoices');encounters.replaceChildren();
+ for(const e of pending){
+   const box=document.createElement('div');box.className='guide';
+   const info=document.createElement('strong');info.textContent=`🐾 Découverte : ${e.species} ${e.sex==='M'?'mâle':'femelle'} · biome : ${e.biome||'inconnu'}`;box.append(info);
+   const actions=document.createElement('div');actions.className='bar';
+   for(const [choice,label] of [['garder','🏡 Ramener vivant'],['abattre','🍖 Nourriture immédiate']]){
+      const btn=document.createElement('button');btn.textContent=label;btn.onclick=async()=>{try{await call('/api/encounter/decide','POST',{id:Number(e.id),decision:choice});status(choice==='garder'?'Animal accueilli dans ton enclos.':'Nourriture récupérée.');await loadVillage()}catch(err){status('⚠️ '+err.message)}};actions.append(btn);
+   }box.append(actions);encounters.append(box);
+ }
+ const herd=$('animalHerd');herd.replaceChildren();
+ for(const a of creatures){const row=document.createElement('div');row.className='person';const label=document.createElement('span');label.textContent=`${a.species==='lapin'?'🐇':a.species==='cochon'?'🐖':'🐄'} ${a.species} ${a.sex==='M'?'♂':'♀'} · ${a.source}`;const btn=document.createElement('button');btn.textContent='🍖 Abattre';btn.onclick=async()=>{if(!confirm(`Abattre cet animal pour obtenir de la nourriture ?`))return;try{const r=await call('/api/animals/slaughter','POST',{id:Number(a.id)});status(`+${r.food} nourriture`);await loadVillage()}catch(err){status('⚠️ '+err.message)}};const meters=document.createElement('div');meters.className='meter';
+  for(const [em,tx,val] of [['🍎','Faim',a.hunger],['💧','Soif',a.thirst],['❤️','Santé',a.health]]){const el=document.createElement('span');el.className=Number(val)<35?'low':'';el.textContent=`${em} ${tx} ${val??'–'}%`;meters.append(el)}
+  const care=document.createElement('button');care.textContent='🩹 Nourrir / soigner (3 🍎)';care.onclick=async()=>{try{await call('/api/animals/care','POST',{id:Number(a.id)});status('Animal nourri, abreuvé et soigné.');await loadVillage()}catch(e){status('⚠️ '+e.message)}};
+  const detail=infoButton('animal',a.species);row.classList.add('animal-card');row.append(label,detail,meters,care,btn);herd.append(row)}
+
+ const alerts=village.people.filter(p=>p.hunger<35||p.energy<25||p.health<50);
+ $('needsSummary').textContent=alerts.length?`⚠️ ${alerts.length} habitant(s) nécessitent de l'attention. Construis des huttes et assure les réserves de nourriture.`:'✅ Les habitants vont bien. Gère leurs métiers et leur logement.';
+ $('quickSummary').textContent=`🏘️ ${village.people.length} habitants · 🍎 ${r.food} nourriture · ${alerts.length?'⚠️ '+alerts.length+' alertes':'Tout va bien'}`;
+ const jobs=['sans métier','bûcheron','cueilleur','chasseur','tailleur de pierre','savant','pêcheur','éleveur'];const jobCodex=$('jobCodex');jobCodex.replaceChildren();for(const j of jobs){const b=document.createElement('button');b.textContent=j+' ⓘ';b.style.cssText='font-size:11px;padding:5px 7px;margin:2px';b.onclick=()=>codexOpen('job',j);jobCodex.append(b)}
+ const names=new Map(village.people.map(q=>[String(q.id),q.name]));$('people').replaceChildren();$('family').replaceChildren();
+ const adults=village.people.filter(q=>q.age>=18&&!(q.training_until_day&&q.training_until_day>village.world.day));
+ for(const id of ['mother','father']){const el=$(id),previous=el.value;el.replaceChildren();for(const p of adults){const o=document.createElement('option');o.value=String(p.id);o.textContent=p.name+' ('+p.age+' ans)';el.append(o)}if(adults.some(q=>String(q.id)===previous))el.value=previous}
+ if(adults.length>=2&&$('mother').value===$('father').value)$('father').value=String(adults[1].id);
+ $('birth').disabled=adults.length<2;
+ for(const p of village.people){
+  const row=document.createElement('div');row.className='person';
+  const name=document.createElement('span');name.className='person-name';name.textContent=`${p.age<16?'🧒':'🧑'} ${p.name} · ${p.age} ans`;
+  const inTraining=Boolean(p.training_until_day&&p.training_until_day>village.world.day);
+  const job=document.createElement('select');job.disabled=p.age<16||inTraining;
+  for(const j of jobs){const o=document.createElement('option');o.value=j;o.textContent=j;o.selected=p.job===j;job.appendChild(o)}
+  job.onchange=async()=>{try{const r=await call('/api/job','POST',{id:Number(p.id),job:job.value});status(r.training_days?`📚 ${p.name} commence ${r.training_days} jours de formation, sans production.`:`${p.name} cesse son activité.`);await loadVillage()}catch(e){status('⚠️ '+e.message);await loadVillage()}};
+  const info=document.createElement('div');info.className='person-name';info.append(name);
+  if(p.rename_allowed){
+    const edit=document.createElement('button');edit.textContent='✎ Renommer';edit.title='Renommer '+p.name;edit.style.cssText='font-size:11px;padding:5px 7px;margin-left:6px';
+    edit.onclick=async()=>{const newName=prompt('Nouveau prénom (2 à 24 caractères)',p.name);if(newName===null||newName.trim()===p.name)return;try{await call('/api/rename','POST',{id:Number(p.id),name:newName.trim()});status('Prénom enregistré');await loadVillage()}catch(e){status('⚠️ '+e.message)}};
+    info.append(edit);
+  }
+  row.append(info,job,infoButton('job',p.job));
+  if(inTraining){const training=document.createElement('div');training.className='need-badges';training.textContent=`📚 Formation : ${p.training_job} · encore ${p.training_until_day-village.world.day} jour(s) · indisponible, production suspendue`;row.append(training)}
+  const needs=document.createElement('div');needs.className='need-badges';
+  for(const [icon,label,value,limit] of [['🍎','Faim',p.hunger,35],['💤','Énergie',p.energy,25],['❤️','Santé',p.health,50]]){const b=document.createElement('span');b.className=Number(value)<limit?'bad':'';b.textContent=`${icon} ${label} ${value??'–'}%`;needs.append(b)}
+  row.append(needs);
+  const houses=document.createElement('select');houses.setAttribute('aria-label','Logement de '+p.name);
+  const none=document.createElement('option');none.value='';none.textContent='🏕️ Sans logement';houses.append(none);
+  for(const h of village.homes||[]){const o=document.createElement('option');o.value=String(h.id);o.textContent=`🏠 Hutte ${h.x}, ${h.y}`;houses.append(o)}
+  houses.value=p.home_building_id?String(p.home_building_id):'';
+  houses.onchange=async()=>{try{await call('/api/housing','POST',{id:Number(p.id),home:houses.value?Number(houses.value):null});status('Logement enregistré pour '+p.name);await loadVillage()}catch(e){status('⚠️ '+e.message);await loadVillage()}};
+  const houseRow=document.createElement('div');houseRow.className='house-row';houseRow.append(houses);row.append(houseRow);
+  $('people').append(row);
+  const line=document.createElement('div');line.className='familyline';
+  line.textContent=`${p.name} · ${p.age} ans · ${p.job}`;
+  const parents=document.createElement('small');parents.textContent='Parents : '+[p.mother_id,p.father_id].filter(Boolean).map(id=>names.get(String(id))||'Inconnu').join(' et ')||'Fondateur';
+  if(!p.mother_id&&!p.father_id)parents.textContent='Fondateur ou filiation inconnue';
+  line.append(parents);$('family').append(line);
+ }
+ spawnVillagers();
+}
+async function refresh(recenter=false){if(refreshing)return;refreshing=true;try{config=await call('/api/config');const me=await call('/api/me');player=me.player;$('identity').textContent=player.name;$('connection').textContent='● Monde connecté';$('connection').style.color='#a0dca1';$('login').hidden=true;$('game').hidden=false;setup3d();await loadVillage();if(recenter||!chunk)await chunkAt(Math.floor(player.x/32),Math.floor(player.y/32));else await chunkAt(focus.cx,focus.cy);const names={hut:'Hutte',fire:'Foyer',store:'Réserve',work:'Atelier',gather:'Collecte',farm:'Champ',guard:'Garde',palisade:'Palissade',port:'Port primitif',rabbit_trap:'Piège à lapins',pen:'Enclos'};$('costs').textContent=Object.entries(config.costs).map(([k,c])=>`${names[k]||k} : ${c.wood} bois / ${c.stone} pierre / ${c.food} nourriture`).join('  ·  ');$('loading').hidden=true;status('Monde synchronisé. Touche une parcelle pour explorer ou construire.')}catch(e){$('loading').hidden=true;status('⚠️ '+e.message);throw e}finally{refreshing=false}}
+$('join').onclick=async()=>{try{api=endpoint();const d=await call('/api/join','POST',{name:$('tribe').value.trim()});token=d.token;localStorage.setItem('mo_mmo_api',api);localStorage.setItem('mo_mmo_token',token);await refresh(true)}catch(e){status('⚠️ '+e.message)}};
+$('restore').onclick=async()=>{try{api=endpoint();const key=$('restoreKey').value.trim().toLowerCase();if(!/^[a-f0-9]{64}$/.test(key))throw Error('Clé invalide (64 caractères)');token=key;await refresh(true);localStorage.setItem('mo_mmo_api',api);localStorage.setItem('mo_mmo_token',token);$('restoreKey').value=''}catch(e){token='';status('⚠️ '+e.message)}};
+$('reload').onclick=()=>refresh().catch(e=>status('⚠️ '+e.message));$('home').onclick=()=>chunkAt(Math.floor(player.x/32),Math.floor(player.y/32)).catch(e=>status('⚠️ '+e.message));$('north').onclick=()=>chunkAt(focus.cx,focus.cy-1).catch(e=>status('⚠️ '+e.message));$('south').onclick=()=>chunkAt(focus.cx,focus.cy+1).catch(e=>status('⚠️ '+e.message));$('west').onclick=()=>chunkAt(focus.cx-1,focus.cy).catch(e=>status('⚠️ '+e.message));$('east').onclick=()=>chunkAt(focus.cx+1,focus.cy).catch(e=>status('⚠️ '+e.message));$('zoomIn').onclick=()=>{camDist=clamp(camDist-8,15,92);updateCam()};$('zoomOut').onclick=()=>{camDist=clamp(camDist+8,15,92);updateCam()};$('refreshPeople').onclick=()=>loadVillage().catch(e=>status('⚠️ '+e.message));
+$('researchNavigation').onclick=async()=>{try{await call('/api/research/navigation','POST',{});status('📜 Navigation primitive recherchée ! Construis une pirogue depuis le port.');await loadVillage()}catch(e){status('⚠️ '+e.message)}};
+$('craftBoat').onclick=async()=>{try{await call('/api/boat','POST',{});status('🛶 Nouvelle pirogue construite ! Tu peux explorer la mer.');await loadVillage();await chunkAt(focus.cx,focus.cy)}catch(e){status('⚠️ '+e.message)}};
+$('birth').onclick=async()=>{try{const mother=Number($('mother').value),father=Number($('father').value);if(!mother||!father||mother===father)throw Error('Choisis deux parents adultes distincts');await call('/api/birth','POST',{mother,father,name:$('babyName').value.trim()||undefined});$('babyName').value='';status('👶 Une naissance a été enregistrée !');await loadVillage()}catch(e){status('⚠️ '+e.message)}};
+$('exportKey').onclick=()=>{const blob=new Blob([JSON.stringify({api,token},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='metropolis-cle-tribu.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);status('Clé sauvegardée. Ne la communique à personne.')} ;$('forget').onclick=()=>{if(confirm('Effacer la session de cet appareil ? Conserve ta clé privée pour récupérer ta tribu.')){localStorage.removeItem('mo_mmo_token');location.reload()}};
+function chooseBuilding(kind){
+ clearPreview();mode=kind;document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('selected',b.dataset.mode===kind));
+ $('currentAction').textContent='🔨 '+(buildNames[kind]||kind);
+ status('🔨 '+(buildNames[kind]||kind)+' sélectionné : touche une parcelle pour voir l’aperçu avant confirmation.');
+ document.querySelectorAll('.panel,[data-panel]').forEach(x=>x.classList.remove('active'));
+}
+document.querySelectorAll('#modeTools [data-mode]').forEach(b=>{
+ b.setAttribute('title','Voir la fiche de '+(buildNames[b.dataset.mode]||b.dataset.mode));
+ b.textContent='ⓘ  '+(buildNames[b.dataset.mode]||b.dataset.mode);
+ b.onclick=()=>codexOpen('building',b.dataset.mode);
+});
+document.querySelector('[data-mode="explore"]').onclick=()=>{
+ clearPreview();mode='explore';document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('selected',b.dataset.mode==='explore'));
+ $('currentAction').textContent='🧭 Explorer';status('Mode exploration : touche une parcelle.');
+ document.querySelectorAll('.panel,[data-panel]').forEach(x=>x.classList.remove('active'));
+};
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if(token&&api)refresh(true).catch(e=>{$('login').hidden=false;$('game').hidden=true;status('Connexion impossible : '+e.message)});setInterval(()=>{if(player&&!document.hidden){if(village?.expedition)tripView(village.expedition);if(expeditionEndsAt&&Date.now()>=expeditionEndsAt){expeditionEndsAt=0;refresh().catch(()=>{})}}},1000);setInterval(()=>{if(player&&!document.hidden)refresh().catch(()=>{})},30000);
+</script></body></html>

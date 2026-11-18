@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101b16"><title>METROPOLIS ORIGINS MMO V37 — Renaissance</title><link rel="manifest" href="manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="../icon-192.png"><style>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101b16"><title>METROPOLIS ORIGINS MMO V37.1 — Menu corrigé</title><link rel="manifest" href="manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="../icon-192.png"><style>
 #weatherFx{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.40}
 #weatherFx.rain{background-image:repeating-linear-gradient(110deg, transparent 0px,transparent 22px,#cfe9fa88 23px,transparent 25px);background-size:130px 90px;animation:rainfall .5s linear infinite}
 #weatherFx.snow{background-image:radial-gradient(2px 2px at 20px 30px,#fff 90%,transparent),radial-gradient(3px 3px at 80px 60px,#fff 90%,transparent),radial-gradient(2px 2px at 130px 10px,#fff 90%,transparent);background-size:170px 140px;animation:snowfall 8s linear infinite}
@@ -63,7 +63,33 @@ button:focus-visible,input:focus-visible{outline:2px solid #e8c485;outline-offse
 @media(max-width:720px){.top{min-height:56px;padding:8px 12px}.top h1{font-size:13px}.top small{display:none}.viewport{height:calc(100dvh - 119px);min-height:0}.login{width:calc(100% - 20px);margin:12px auto!important;padding:15px!important}.login-grid{grid-template-columns:1fr;gap:14px}.login-hero h2{font-size:25px;margin:7px 0}.login-hero p{font-size:12px}.login-hero .features{margin-top:12px}.login-form{padding:14px}.bottom{left:8px;width:calc(100% - 16px);bottom:84px;max-height:56dvh}.dock{border-radius:13px}.dock button{padding:6px 2px;min-width:0}.dock button span{font-size:10px}.hud{padding:7px}.hud .pill{padding:8px;font-size:10px}.coord{display:none}#adminView{margin:12px;padding:14px}#adminStats{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1080px){.bottom{left:20px;bottom:95px}.viewport{height:calc(100dvh - 145px)}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition:none!important}}
-</style></head><body><div class="shell"><header class="top"><div><h1>METROPOLIS <span style="color:#d7b477">ORIGINS</span> <span style="font-size:11px;color:#b4c5af">MMO V37</span></h1><small>Monde persistant · Renaissance · Monde partagé · Civilisations vivantes</small></div><span class="tag" id="connection">● Hors ligne</span></header>
+
+/* V37.1 : barre de navigation visible en permanence, quel que soit le ratio d'écran. */
+#game:not([hidden]){height:calc(100dvh - 68px);min-height:0;flex:0 0 auto;overflow:hidden}
+#game:not([hidden]) .viewport{height:100%!important;min-height:0!important;flex:1 1 auto}
+#game:not([hidden]) .dock{
+ position:fixed!important;left:50%!important;right:auto!important;bottom:max(10px,env(safe-area-inset-bottom))!important;
+ transform:translateX(-50%);z-index:70!important;width:min(940px,calc(100% - 24px));
+ display:flex!important;justify-content:space-around;align-items:stretch;
+ padding:7px!important;visibility:visible!important;opacity:1!important;
+}
+#game:not([hidden]) .dock button{flex:1 1 0;min-height:53px;min-width:0}
+#game:not([hidden]) .bottom{
+ position:fixed!important;z-index:69!important;bottom:calc(85px + env(safe-area-inset-bottom))!important;
+ left:max(12px,env(safe-area-inset-left))!important;right:auto!important;
+ width:min(445px,calc(100% - 24px))!important;max-height:calc(100dvh - 175px)!important;
+}
+#game:not([hidden]) #buildConfirm{position:fixed!important;z-index:80!important}
+#game:not([hidden]) #codexModal{position:fixed!important;z-index:90!important}
+#game:not([hidden]) #toast{position:fixed!important;z-index:95!important}
+@media(max-width:720px){
+ #game:not([hidden]){height:calc(100dvh - 56px)}
+ #game:not([hidden]) .dock{bottom:max(4px,env(safe-area-inset-bottom))!important;width:calc(100% - 12px);padding:4px!important}
+ #game:not([hidden]) .dock button{min-height:55px;padding:5px 1px!important}
+ #game:not([hidden]) .dock button span{font-size:9px}
+ #game:not([hidden]) .bottom{bottom:calc(78px + env(safe-area-inset-bottom))!important;max-height:calc(100dvh - 155px)!important}
+}
+</style></head><body><div class="shell"><header class="top"><div><h1>METROPOLIS <span style="color:#d7b477">ORIGINS</span> <span style="font-size:11px;color:#b4c5af">MMO V37.1</span></h1><small>Monde persistant · Renaissance · Monde partagé · Civilisations vivantes</small></div><span class="tag" id="connection">● Hors ligne</span></header>
 <section id="login" class="login"><div class="login-grid">
 <div class="login-hero"><div class="micro">UN MONDE · DES MILLIERS D'HISTOIRES</div><h2>Fonde ta civilisation. Écris son histoire.</h2><p>Développe ton village au fil des générations. Explore un monde permanent, élève tes animaux, construis des ports, forme tes habitants et retrouve ta progression sur tous tes appareils.</p><div class="features"><span>🌿 Territoires et biomes</span><span>🏕️ Villages persistants</span><span>👪 Familles et métiers</span><span>⚓ Navigation et élevage</span></div></div>
 <div class="login-form"><h3>Rejoindre le monde</h3><label for="endpoint">Serveur du monde</label><input id="endpoint" type="url" placeholder="https://metropolis-origins-mmo.onrender.com" autocomplete="url"><div class="login-tabs"><button id="tabLogin" class="primary" type="button">Se connecter</button><button id="tabRegister" type="button">Créer un compte</button></div>
